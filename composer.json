@@ -18,10 +18,10 @@
         "symfony/serializer": "*",
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "~6.0",
         "symfony/dotenv": "*",
         "symfony/phpunit-bridge": "*",
         "symfony/test-pack": "^1.0"
