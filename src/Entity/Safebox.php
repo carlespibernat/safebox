@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use GuzzleHttp\Client;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -25,6 +27,8 @@ class Safebox
      * @var string
      *
      * @ORM\Column(type="string")
+     *
+     * @Assert\NotBlank
      */
     private $name;
 
@@ -34,6 +38,13 @@ class Safebox
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @var string
+     *
+     * @Assert\NotBlank
+     */
+    private $plainPassword;
 
     /**
      * @var Token
@@ -100,6 +111,47 @@ class Safebox
     public function setPassword(string $password)
     {
         $this->password = $password;
+    }
+
+    /**
+     *
+     * Check if a valid plain password has been set
+     *
+     * @return bool
+     */
+    public function hasValidPlainPassword(): bool
+    {
+        // Check has at least 6 characters
+        if (strlen($this->getPlainPassword()) < 6) {
+            return false;
+        }
+
+        // Check is one of the top used passwords
+        $client = new Client();
+        $response = $client->get('https://raw.githubusercontent.com/mozilla/fxa-password-strength-checker/master/source_data/10_million_password_list_top_10000.txt');
+        $fileContent = $response->getBody()->getContents();
+        $words = explode("\n", $fileContent);
+        if (in_array($this->getPlainPassword(), $words)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param string $plainPassword
+     */
+    public function setPlainPassword(string $plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
     }
 
     /**
