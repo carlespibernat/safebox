@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 class ApiTestCase extends WebTestCase
