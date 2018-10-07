@@ -71,17 +71,22 @@ class SafeboxControllerTest extends ApiTestCase
         $date = new \DateTime();
         $date->add(new \DateInterval('PT180S'));
 
-        $this->assertEquals($date, $safebox->getToken()->getExpirationTime());
+        $this->assertEquals($date->format('i'), $safebox->getToken()->getExpirationTime()->format('i'));
 
         // Test expiration time parameter
-        $this->request('safebox/1?expirationTime=80');
+        $data = [
+            'name' => 'Adsmurai Safebox 02',
+            'password' => 'adsmuraiExamplePassword'
+        ];
+        $this->request('safebox', 'POST', json_encode($data));
+        $this->request('safebox/2?expirationTime=120');
 
-        $safebox = $repository->find(1);
+        $safebox = $repository->find(2);
 
         $date = new \DateTime();
-        $date->add(new \DateInterval('PT80S'));
+        $date->add(new \DateInterval('PT120S'));
 
-        $this->assertEquals($date, $safebox->getToken()->getExpirationTime());
+        $this->assertEquals($date->format('i'), $safebox->getToken()->getExpirationTime()->format('i'));
 
         // Test safebox does not exists
         $response = $this->request('safebox/10');
