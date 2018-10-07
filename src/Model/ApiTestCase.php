@@ -96,20 +96,24 @@ class ApiTestCase extends WebTestCase
      * @param string $endpoint
      * @param string $method
      * @param string $body
+     * @param array $headers
+     *
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    public function request(string $endpoint, string $method = 'GET', string $body = '')
+    public function request(string $endpoint, string $method = 'GET', string $body = '', array $headers = [])
     {
         $client = new Client([
             'base_uri' => $this->apiBaseUri,
             'http_errors' => false
         ]);
 
+        if (!isset($headers['Content-Type'])) {
+            $headers['Content-Type'] = 'application/json';
+        }
+
         return $client->request($method, $endpoint, [
             'body' => $body,
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ]
+            'headers' => $headers
         ]);
     }
 
