@@ -24,7 +24,8 @@
     "require-dev": {
         "symfony/dotenv": "*",
         "symfony/phpunit-bridge": "*",
-        "symfony/test-pack": "^1.0"
+        "symfony/test-pack": "^1.0",
+        "symfony/var-dumper": "*"
     },
     "config": {
         "preferred-install": {
