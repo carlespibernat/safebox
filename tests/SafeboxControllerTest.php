@@ -107,4 +107,48 @@ class SafeboxControllerTest extends ApiTestCase
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
 
     }
+
+    public function testPostSafeboxItem()
+    {
+        $repository = self::$entityManager->getRepository(Safebox::class);
+
+        $data = [
+            'item' => 'New safebox content'
+        ];
+
+        // Test invalid token
+        $response = $this->request('safebox/1', 'POST', json_encode($data));
+        $this->assertEquals(401, $response->getStatusCode());
+
+        // Test safebox does not exist
+        $safebox = $repository->find(1);
+        $response = $this->request(
+            'safebox/10',
+                'POST',
+                json_encode($data),
+            ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
+        );
+        $this->assertEquals(404, $response->getStatusCode());
+
+        // Test malformed data
+        $response = $this->request(
+            'safebox/1',
+            'POST',
+            json_encode([]),
+            ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
+        );
+        $this->assertEquals(400, $response->getStatusCode());
+
+        // Test database insert
+        $response = $this->request(
+            'safebox/1',
+            'POST',
+            json_encode($data),
+            ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        /** @var Safebox $safebox */
+        $safebox = $repository->find(1);
+        $this->assertEquals('New safebox content', $safebox->getItems()[0]->getContent());
+    }
 }
