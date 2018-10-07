@@ -14,7 +14,7 @@ class SafeboxControllerTest extends ApiTestCase
      */
     public function testSafeboxCreateResponse()
     {
-        $repository = $this->entityManager->getRepository(Safebox::class);
+        $repository = self::$entityManager->getRepository(Safebox::class);
 
         $initialCount = count($repository->findAll());
 
@@ -50,12 +50,10 @@ class SafeboxControllerTest extends ApiTestCase
 
     /**
      * Test open safebox
-     *
-     * @depends testSafeboxCreateResponse
      */
     public function testSafeboxOpenCreate()
     {
-        $repository = $this->entityManager->getRepository(Safebox::class);
+        $repository = self::$entityManager->getRepository(Safebox::class);
 
         $response = $this->request('safebox/1');
         $this->assertEquals(200, $response->getStatusCode());

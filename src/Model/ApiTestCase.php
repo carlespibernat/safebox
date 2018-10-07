@@ -21,7 +21,7 @@ class ApiTestCase extends WebTestCase
     protected static $application;
 
     /** @var  EntityManager $entityManager */
-    protected $entityManager;
+    protected static $entityManager;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -35,31 +35,29 @@ class ApiTestCase extends WebTestCase
     /**
      * {@inheritDoc}
      */
-    public function setUp()
+    public static function setUpBeforeClass()
     {
-        parent::setUp();
+        parent::setUpBeforeClass();
 
         self::runCommand('doctrine:database:drop --force');
         self::runCommand('doctrine:database:create');
         self::runCommand('doctrine:schema:create');
 
         $client = static::createClient();
-        $this->entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
-
-        parent::setUp();
+        self::$entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function tearDown()
+    public static function tearDownAfterClass()
     {
         self::runCommand('doctrine:database:drop --force');
 
-        parent::tearDown();
+        parent::tearDownAfterClass();
 
-        $this->entityManager->close();
-        $this->entityManager = null;
+        self::$entityManager->close();
+        self::$entityManager = null;
     }
 
     /**
