@@ -55,7 +55,12 @@ class SafeboxControllerTest extends ApiTestCase
     {
         $repository = self::$entityManager->getRepository(Safebox::class);
 
-        $response = $this->request('safebox/1');
+        $response = $this->request(
+            'safebox/1',
+                'GET',
+                '',
+                ['Authorization' => "Bearer adsmuraiExamplePassword"]
+        );
         $this->assertEquals(200, $response->getStatusCode());
 
         $contentType = $response->getHeaders()["Content-Type"][0];
@@ -79,7 +84,12 @@ class SafeboxControllerTest extends ApiTestCase
             'password' => 'adsmuraiExamplePassword'
         ];
         $this->request('safebox', 'POST', json_encode($data));
-        $this->request('safebox/2?expirationTime=120');
+        $this->request(
+            'safebox/2?expirationTime=120',
+            'GET',
+            '',
+            ['Authorization' => "Bearer adsmuraiExamplePassword"]
+        );
 
         $safebox = $repository->find(2);
 
@@ -91,6 +101,10 @@ class SafeboxControllerTest extends ApiTestCase
         // Test safebox does not exists
         $response = $this->request('safebox/10');
         $this->assertEquals(404, $response->getStatusCode());
+
+        // Test authentication
+        $response = $this->request('safebox/2?expirationTime=120');
+        $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
 
     }
 }
