@@ -63,6 +63,12 @@ class SafeboxController extends FOSRestController
             throw new HttpException(404, 'Requested safebox does not exist');
         }
 
+        $password = str_replace('Bearer ', '', $request->headers->get('Authorization'));
+
+        if (!password_verify($password, $safebox->getPassword())) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Invalid password');
+        }
+
         $expirationTime = $request->get('expirationTime') ? $request->get('expirationTime') : 180;
         $expirationDateTime = new \DateTime();
         $expirationDateTime->add(new \DateInterval('PT' . $expirationTime . 'S'));
