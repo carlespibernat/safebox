@@ -47,4 +47,47 @@ class SafeboxControllerTest extends ApiTestCase
         $this->assertEquals(422, $response->getStatusCode());
 
     }
+
+    /**
+     * Test open safebox
+     *
+     * @depends testSafeboxCreateResponse
+     */
+    public function testSafeboxOpenCreate()
+    {
+        $repository = $this->entityManager->getRepository(Safebox::class);
+
+        $response = $this->request('safebox/1');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $contentType = $response->getHeaders()["Content-Type"][0];
+        $this->assertEquals("application/json", $contentType);
+
+        $content = json_decode($response->getBody(), true);
+
+        $this->assertArrayHasKey('token', $content);
+        $this->assertEquals(count($content), 1);
+
+        $safebox = $repository->find(1);
+
+        $date = new \DateTime();
+        $date->add(new \DateInterval('PT180S'));
+
+        $this->assertEquals($date, $safebox->getToken()->getExpirationTime());
+
+        // Test expiration time parameter
+        $this->request('safebox/1?expirationTime=80');
+
+        $safebox = $repository->find(1);
+
+        $date = new \DateTime();
+        $date->add(new \DateInterval('PT80S'));
+
+        $this->assertEquals($date, $safebox->getToken()->getExpirationTime());
+
+        // Test safebox does not exists
+        $response = $this->request('safebox/10');
+        $this->assertEquals(404, $response->getStatusCode());
+
+    }
 }
