@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,8 +23,10 @@ class Token
      * @var string
      *
      * @ORM\Column(type="string")
+     *
+     * @Groups({"token"})
      */
-    private $value;
+    private $token;
 
     /**
      * @var \DateTime
@@ -51,17 +54,25 @@ class Token
     /**
      * @return string
      */
-    public function getValue(): ?string
+    public function getToken(): ?string
     {
-        return $this->value;
+        return $this->token;
     }
 
     /**
-     * @param string $value
+     * @param string $token
      */
-    public function setValue(string $value)
+    public function setToken(string $token)
     {
-        $this->value = $value;
+        $this->token= $token;
+    }
+
+    /**
+     * Auto generate a token
+     */
+    public function generateToken(): void
+    {
+        $this->setToken(md5(random_bytes(10)));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Safebox;
+use App\Entity\Token;
 use App\Form\SafeboxType;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -11,13 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-/**
- * @Rest\View(serializerGroups={"safebox"})
- */
 class SafeboxController extends FOSRestController
 {
     /**
      * @Rest\Post("/safebox")
+     * @Rest\View(serializerGroups={"safebox"})
      */
     public function postSafebox(Request $request)
     {
@@ -49,5 +48,35 @@ class SafeboxController extends FOSRestController
         }
 
         return View::create($form);
+    }
+
+    /**
+     * @Rest\Get("/safebox/{id}")
+     * @Rest\View(serializerGroups={"token"})
+     */
+    public function openSafebox($id, Request $request)
+    {
+        /** @var Safebox $safebox */
+        $safebox = $this->getDoctrine()->getRepository(Safebox::class)->find($id);
+
+        if (!$safebox) {
+            throw new HttpException(404, 'Requested safebox does not exist');
+        }
+
+        $expirationTime = $request->get('expirationTime') ? $request->get('expirationTime') : 180;
+        $expirationDateTime = new \DateTime();
+        $expirationDateTime->add(new \DateInterval('PT' . $expirationTime . 'S'));
+
+        $token = new Token();
+        $token->setExpirationTime($expirationDateTime);
+        $token->generateToken();
+
+        $safebox->setToken($token);
+
+        $this->getDoctrine()->getManager()->persist($token);
+        $this->getDoctrine()->getManager()->persist($safebox);
+        $this->getDoctrine()->getManager()->flush();
+
+        return View::create($token);
     }
 }

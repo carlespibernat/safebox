@@ -49,7 +49,7 @@ class Safebox
     /**
      * @var Token
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Token")
+     * @ORM\OneToOne(targetEntity="App\Entity\Token", cascade={"persist"})
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
      */
     private $token;
