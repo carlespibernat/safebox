@@ -2,21 +2,95 @@
 
 namespace App\Model;
 
+use Doctrine\ORM\EntityManager;
 use GuzzleHttp\Client;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ApiTestCase extends TestCase
+
+class ApiTestCase extends WebTestCase
 {
     const DEFAULT_API_BASE_URI = 'http://host.docker.internal';
 
     /** @var  string */
     private $apiBaseUri;
 
+    /** @var  Application $application */
+    protected static $application;
+
+    /** @var  EntityManager $entityManager */
+    protected $entityManager;
+
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
         $this->configureBaseUri();
+
+        ini_set('memory_limit', '256M');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        self::runCommand('doctrine:database:drop --force');
+        self::runCommand('doctrine:database:create');
+        self::runCommand('doctrine:schema:create');
+
+        $client = static::createClient();
+        $this->entityManager = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        parent::setUp();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function tearDown()
+    {
+        self::runCommand('doctrine:database:drop --force');
+
+        parent::tearDown();
+
+        $this->entityManager->close();
+        $this->entityManager = null;
+    }
+
+    /**
+     * Runs a command
+     *
+     * @param string $command
+     *
+     * @return int
+     */
+    protected static function runCommand($command)
+    {
+        $command = sprintf('%s --quiet', $command);
+
+        return self::getApplication()->run(new StringInput($command));
+    }
+
+    /**
+     * Get application
+     *
+     * @return Application
+     */
+    protected static function getApplication()
+    {
+        if (null === self::$application) {
+            $client = static::createClient();
+
+            self::$application = new Application($client->getKernel());
+            self::$application->setAutoExit(false);
+        }
+
+        return self::$application;
     }
 
     /**
