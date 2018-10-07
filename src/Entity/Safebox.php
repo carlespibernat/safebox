@@ -149,7 +149,7 @@ class Safebox
     /**
      * @param string $plainPassword
      */
-    public function setPlainPassword(string $plainPassword)
+    public function setPlainPassword(string $plainPassword): void
     {
         $this->plainPassword = $plainPassword;
     }
@@ -173,16 +173,28 @@ class Safebox
     /**
      * @return SafeboxItem[]
      */
-    public function getItems(): array
+    public function getItems()
     {
         return $this->items;
     }
 
     /**
+     * @param SafeboxItem $safeboxItem
+     */
+    public function addItem(SafeboxItem $safeboxItem): void
+    {
+        $this->items[] = $safeboxItem;
+    }
+
+    /**
      * @param SafeboxItem[] $items
      */
-    public function setItems(array $items)
+    public function setItems(array $items): void
     {
-        $this->items = $items;
+        $this->items = [];
+
+        foreach ($items as $item) {
+            $this->addItem($item);
+        }
     }
 }

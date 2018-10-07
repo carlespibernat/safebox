@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Safebox;
+use App\Entity\SafeboxItem;
 use App\Entity\Token;
+use App\Form\SafeboxItemType;
 use App\Form\SafeboxType;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -84,5 +86,44 @@ class SafeboxController extends FOSRestController
         $this->getDoctrine()->getManager()->flush();
 
         return View::create($token);
+    }
+
+    /**
+     * @Rest\Post("/safebox/{safeboxId}")
+     */
+    public function addSafeboxItem($safeboxId, Request $request)
+    {
+        /** @var Safebox $safebox */
+        $safebox = $this->getDoctrine()->getRepository(Safebox::class)->find($safeboxId);
+
+        if(!$safebox) {
+            throw new HttpException(404, 'Requested safebox does not exist');
+        }
+
+        $token = str_replace('Bearer ', '', $request->headers->get('Authorization'));
+        if ($token != $safebox->getToken()->getToken()) {
+            throw new HttpException(401, 'Specified token does not match');
+        }
+
+        $safeboxItem = new SafeboxItem();
+        $form = $this->createForm(SafeboxItemType::class, $safeboxItem);
+        $data = json_decode($request->getContent(), true);
+
+        $form->submit($data);
+
+        if ($form->isValid()) {
+            /** @var Safebox $safebox */
+            $safeboxItem = $form->getData();
+
+            $this->getDoctrine()->getManager()->persist($safeboxItem);
+
+            $safebox->addItem($safeboxItem);
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return View::create($safebox,200);
+        }
+
+        return View::create($form, 422);
     }
 }
