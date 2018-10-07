@@ -32,7 +32,12 @@ class SafeboxController extends FOSRestController
             $safebox = $form->getData();
 
             if (!$safebox->hasValidPlainPassword()) {
-                throw new HttpException(Response::HTTP_BAD_REQUEST, 'Password not valid');
+                throw new HttpException(422, 'Password not valid');
+            }
+
+            // Check if safebox already exists
+            if ($this->getDoctrine()->getRepository(Safebox::class)->findBy(['name' => $safebox->getName()])) {
+                throw new HttpException(409, 'Safebox already exists');
             }
 
             $safebox->setPassword(password_hash($safebox->getPlainPassword(), PASSWORD_DEFAULT));
