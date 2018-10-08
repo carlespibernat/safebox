@@ -151,4 +151,42 @@ class SafeboxControllerTest extends ApiTestCase
         $safebox = $repository->find(1);
         $this->assertEquals('New safebox content', $safebox->getItems()[0]->getContent());
     }
+
+    public function testGetSafeboxContent()
+    {
+        $repository = self::$entityManager->getRepository(Safebox::class);
+        $safebox = $repository->find(1);
+
+        // Test invalid token
+        $response = $this->request('safebox/1');
+        $this->assertEquals(401, $response->getStatusCode());
+
+        // Test safebox does not exist
+        $response = $this->request(
+            'safebox/10',
+            'GET',
+            json_encode([]),
+            ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
+        );
+        $this->assertEquals(401, $response->getStatusCode());
+
+        // Test response
+        $response = $this->request(
+            'safebox/1',
+            'GET',
+            json_encode([]),
+            ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $contentType = $response->getHeaders()["Content-Type"][0];
+        $this->assertEquals("application/json", $contentType);
+
+        $content = json_decode($response->getBody(), true);
+
+        $this->assertArrayHasKey('items', $content);
+        $this->assertEquals(count($content), 1);
+        $this->assertEquals('New safebox content', $content['tems'][0]);
+
+    }
 }
