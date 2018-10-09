@@ -102,7 +102,13 @@ class SafeboxController extends FOSRestController
 
         $token = str_replace('Bearer ', '', $request->headers->get('Authorization'));
         if (!$safebox->getToken()->isValid($token)) {
-            throw new HttpException(401, 'Specified token does not match');
+            if ($safebox->getToken()->getFailedAttempts() < Token::MAX_FAILED_ATTEMPTS) {
+                $safebox->getToken()->increaseFailedAttempts();
+                $this->getDoctrine()->getManager()->flush();
+                throw new HttpException(401, 'Specified token does not match');
+            } else {
+                throw new HttpException(423, 'Requested safebox is locked');
+            }
         }
 
         $safeboxItem = new SafeboxItem();
@@ -141,7 +147,13 @@ class SafeboxController extends FOSRestController
 
         $token = str_replace('Bearer ', '', $request->headers->get('Authorization'));
         if (!$safebox->getToken()->isValid($token)) {
-            throw new HttpException(401, 'Specified token does not match');
+            if ($safebox->getToken()->getFailedAttempts() < Token::MAX_FAILED_ATTEMPTS) {
+                $safebox->getToken()->increaseFailedAttempts();
+                $this->getDoctrine()->getManager()->flush();
+                throw new HttpException(401, 'Specified token does not match');
+            } else {
+                throw new HttpException(423, 'Requested safebox is locked');
+            }
         }
 
         $response = ['items' => []];

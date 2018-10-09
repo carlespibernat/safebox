@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Token
 {
+    const MAX_FAILED_ATTEMPTS = 3;
+
     /**
      * @var int
      *
@@ -34,6 +36,13 @@ class Token
      * @ORM\Column(type="datetime")
      */
     private $expirationTime;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $failedAttempts = 0;
 
     /**
      * @return int
@@ -109,5 +118,29 @@ class Token
         }
 
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFailedAttempts(): int
+    {
+        return $this->failedAttempts;
+    }
+
+    /**
+     * Increases failed attempts
+     */
+    public function increaseFailedAttempts(): void
+    {
+        $this->failedAttempts++;
+    }
+
+    /**
+     * @param int $failedAttempts
+     */
+    public function setFailedAttempts(int $failedAttempts): void
+    {
+        $this->failedAttempts = $failedAttempts;
     }
 }
