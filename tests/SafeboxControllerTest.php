@@ -168,7 +168,7 @@ class SafeboxControllerTest extends ApiTestCase
             json_encode([]),
             ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
         );
-        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(404, $response->getStatusCode());
 
         // Test response
         $response = $this->request(
