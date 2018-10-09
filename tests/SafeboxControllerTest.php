@@ -158,12 +158,12 @@ class SafeboxControllerTest extends ApiTestCase
         $safebox = $repository->find(1);
 
         // Test invalid token
-        $response = $this->request('safebox/1');
+        $response = $this->request('safebox/1/open');
         $this->assertEquals(401, $response->getStatusCode());
 
         // Test safebox does not exist
         $response = $this->request(
-            'safebox/10',
+            'safebox/10/open',
             'GET',
             json_encode([]),
             ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
@@ -172,7 +172,7 @@ class SafeboxControllerTest extends ApiTestCase
 
         // Test response
         $response = $this->request(
-            'safebox/1',
+            'safebox/1/open',
             'GET',
             json_encode([]),
             ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
