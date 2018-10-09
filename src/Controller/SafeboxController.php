@@ -101,7 +101,7 @@ class SafeboxController extends FOSRestController
         }
 
         $token = str_replace('Bearer ', '', $request->headers->get('Authorization'));
-        if ($token != $safebox->getToken()->getToken()) {
+        if (!$safebox->getToken()->isValid($token)) {
             throw new HttpException(401, 'Specified token does not match');
         }
 
@@ -140,7 +140,7 @@ class SafeboxController extends FOSRestController
         }
 
         $token = str_replace('Bearer ', '', $request->headers->get('Authorization'));
-        if ($token != $safebox->getToken()->getToken()) {
+        if (!$safebox->getToken()->isValid($token)) {
             throw new HttpException(401, 'Specified token does not match');
         }
 
