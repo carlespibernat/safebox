@@ -28,7 +28,7 @@ class ApiTestCase extends WebTestCase
 
         $this->configureBaseUri();
 
-        ini_set('memory_limit', '256M');
+        ini_set('memory_limit', '512M');
     }
 
     /**
