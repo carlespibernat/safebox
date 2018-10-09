@@ -56,7 +56,7 @@ class SafeboxControllerTest extends ApiTestCase
         $repository = self::$entityManager->getRepository(Safebox::class);
 
         $response = $this->request(
-            'safebox/1',
+            'safebox/1/open',
                 'GET',
                 '',
                 ['Authorization' => "Bearer adsmuraiExamplePassword"]
@@ -85,7 +85,7 @@ class SafeboxControllerTest extends ApiTestCase
         ];
         $this->request('safebox', 'POST', json_encode($data));
         $this->request(
-            'safebox/2?expirationTime=120',
+            'safebox/2/open?expirationTime=120',
             'GET',
             '',
             ['Authorization' => "Bearer adsmuraiExamplePassword"]
@@ -99,11 +99,11 @@ class SafeboxControllerTest extends ApiTestCase
         $this->assertEquals($date->format('i'), $safebox->getToken()->getExpirationTime()->format('i'));
 
         // Test safebox does not exists
-        $response = $this->request('safebox/10');
+        $response = $this->request('safebox/10/open');
         $this->assertEquals(404, $response->getStatusCode());
 
         // Test authentication
-        $response = $this->request('safebox/2?expirationTime=120');
+        $response = $this->request('safebox/2/open?expirationTime=120');
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
 
     }
@@ -158,12 +158,12 @@ class SafeboxControllerTest extends ApiTestCase
         $safebox = $repository->find(1);
 
         // Test invalid token
-        $response = $this->request('safebox/1/open');
+        $response = $this->request('safebox/1');
         $this->assertEquals(401, $response->getStatusCode());
 
         // Test safebox does not exist
         $response = $this->request(
-            'safebox/10/open',
+            'safebox/10',
             'GET',
             json_encode([]),
             ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
@@ -172,7 +172,7 @@ class SafeboxControllerTest extends ApiTestCase
 
         // Test response
         $response = $this->request(
-            'safebox/1/open',
+            'safebox/1',
             'GET',
             json_encode([]),
             ['Authorization' => "Bearer {$safebox->getToken()->getToken()}"]
