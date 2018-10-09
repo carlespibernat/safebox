@@ -90,4 +90,24 @@ class Token
     {
         $this->expirationTime = $expirationTime;
     }
+
+    /**
+     * Check if token is valid
+     *
+     * @param string $token
+     *
+     * @return bool
+     */
+    public function isValid(string $token): bool
+    {
+        if (
+            !$this->getExpirationTime() ||
+            $this->getExpirationTime() < new \DateTime() ||
+            $token != $this->getToken()
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 }
