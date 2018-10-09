@@ -127,7 +127,7 @@ class SafeboxController extends FOSRestController
 
             $this->getDoctrine()->getManager()->flush();
 
-            return View::create($safebox,200);
+            return View::create([],200);
         }
 
         return View::create($form, 422);

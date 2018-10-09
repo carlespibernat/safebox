@@ -22,11 +22,16 @@ class SafeboxItem
     /**
      * @var string
      *
-     * @ORM\Column
-     *
      * @Assert\NotBlank
      */
     private $content;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $contentEncrypted;
 
     /**
      * @return mixed
@@ -58,6 +63,22 @@ class SafeboxItem
     public function setContent(string $content)
     {
         $this->content = $content;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentEncrypted(): string
+    {
+        return $this->contentEncrypted;
+    }
+
+    /**
+     * @param string $contentEncrypted
+     */
+    public function setContentEncrypted(string $contentEncrypted)
+    {
+        $this->contentEncrypted = $contentEncrypted;
     }
 
 

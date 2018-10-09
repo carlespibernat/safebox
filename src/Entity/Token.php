@@ -32,10 +32,15 @@ class Token
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
     private $expirationTime;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     */
+    private $expirationTimeEncrypted;
 
     /**
      * @var int
@@ -98,6 +103,22 @@ class Token
     public function setExpirationTime(\DateTime $expirationTime)
     {
         $this->expirationTime = $expirationTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExpirationTimeEncrypted(): ?string
+    {
+        return $this->expirationTimeEncrypted;
+    }
+
+    /**
+     * @param string $expirationTimeEncrypted
+     */
+    public function setExpirationTimeEncrypted(string $expirationTimeEncrypted): void
+    {
+        $this->expirationTimeEncrypted = $expirationTimeEncrypted;
     }
 
     /**
