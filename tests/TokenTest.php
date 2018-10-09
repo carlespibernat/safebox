@@ -18,7 +18,7 @@ class TokenTest extends TestCase
 
         $token->setExpirationTime(new \DateTime('yesterday'));
 
-        $this->assertFalse('token.test');
+        $this->assertFalse($token->isValid('token.test'));
 
     }
 }
