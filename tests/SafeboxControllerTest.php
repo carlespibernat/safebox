@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use App\Entity\Safebox;
 use App\Model\ApiTestCase;
+use App\Model\EncryptUtils;
 use Symfony\Component\HttpFoundation\Response;
 
 class SafeboxControllerTest extends ApiTestCase
@@ -71,12 +72,24 @@ class SafeboxControllerTest extends ApiTestCase
         $this->assertArrayHasKey('token', $content);
         $this->assertEquals(count($content), 1);
 
+        /** @var Safebox $safebox */
         $safebox = $repository->find(1);
 
         $date = new \DateTime();
         $date->add(new \DateInterval('PT180S'));
 
         $this->assertEquals($date->format('i'), $safebox->getToken()->getExpirationTime()->format('i'));
+
+        // Test encrypted token expiration date
+        /** @var EncryptUtils $encryptUtils */
+        $client = static::createClient();
+        $encryptUtils = $client->getContainer()->get('app.encrypt');
+        $dateTime = new \DateTime();
+        $dateTime->setTimestamp($encryptUtils->decrypt($safebox->getToken()->getExpirationTimeEncrypted()));
+        $this->assertEquals(
+            $dateTime,
+            $safebox->getToken()->getExpirationTime()
+        );
 
         // Test expiration time parameter
         $data = [
@@ -150,6 +163,15 @@ class SafeboxControllerTest extends ApiTestCase
         /** @var Safebox $safebox */
         $safebox = $repository->find(1);
         $this->assertEquals('New safebox content', $safebox->getItems()[0]->getContent());
+
+        // Test encrypted item content
+        /** @var EncryptUtils $encryptUtils */
+        $client = static::createClient();
+        $encryptUtils = $client->getContainer()->get('app.encrypt');
+        $this->assertEquals(
+            'New safebox content',
+            $encryptUtils->decrypt($safebox->getItems()[0]->getContentEncrypted())
+        );
 
         // Test locked safebox
         $response = $this->request(
