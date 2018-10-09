@@ -186,7 +186,7 @@ class SafeboxControllerTest extends ApiTestCase
 
         $this->assertArrayHasKey('items', $content);
         $this->assertEquals(count($content), 1);
-        $this->assertEquals('New safebox content', $content['tems'][0]);
+        $this->assertEquals('New safebox content', $content['items'][0]);
 
     }
 }
