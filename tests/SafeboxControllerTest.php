@@ -150,6 +150,36 @@ class SafeboxControllerTest extends ApiTestCase
         /** @var Safebox $safebox */
         $safebox = $repository->find(1);
         $this->assertEquals('New safebox content', $safebox->getItems()[0]->getContent());
+
+        // Test locked safebox
+        $response = $this->request(
+            'safebox/2',
+            'POST',
+            json_encode([]),
+            ['Authorization' => "Bearer invalid.token"]
+        );
+        $this->assertEquals(401, $response->getStatusCode());
+        $response = $this->request(
+            'safebox/2',
+            'POST',
+            json_encode([]),
+            ['Authorization' => "Bearer invalid.token"]
+        );
+        $this->assertEquals(401, $response->getStatusCode());
+        $response = $this->request(
+            'safebox/2',
+            'POST',
+            json_encode([]),
+            ['Authorization' => "Bearer invalid.token"]
+        );
+        $this->assertEquals(401, $response->getStatusCode());
+        $response = $this->request(
+            'safebox/2',
+            'POST',
+            json_encode([]),
+            ['Authorization' => "Bearer invalid.token"]
+        );
+        $this->assertEquals(423, $response->getStatusCode());
     }
 
     public function testGetSafeboxContent()
@@ -187,6 +217,12 @@ class SafeboxControllerTest extends ApiTestCase
         $this->assertArrayHasKey('items', $content);
         $this->assertEquals(count($content), 1);
         $this->assertEquals('New safebox content', $content['items'][0]);
+
+        // Test locked safebox
+        $response = $this->request('safebox/1');
+        $this->assertEquals(401, $response->getStatusCode());
+        $response = $this->request('safebox/1');
+        $this->assertEquals(423, $response->getStatusCode());
 
     }
 }
