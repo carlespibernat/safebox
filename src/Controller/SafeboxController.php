@@ -53,7 +53,7 @@ class SafeboxController extends FOSRestController
     }
 
     /**
-     * @Rest\Get("/safebox/{id}")
+     * @Rest\Get("/safebox/{id}/open")
      * @Rest\View(serializerGroups={"token"})
      */
     public function openSafebox($id, Request $request)
@@ -125,5 +125,30 @@ class SafeboxController extends FOSRestController
         }
 
         return View::create($form, 422);
+    }
+
+    /**
+     * @Rest\Get("/safebox/{safeboxId}")
+     */
+    public function getSafeboxContent($safeboxId, Request $request)
+    {
+        /** @var Safebox $safebox */
+        $safebox = $this->getDoctrine()->getRepository(Safebox::class)->find($safeboxId);
+
+        if(!$safebox) {
+            throw new HttpException(404, 'Requested safebox does not exist');
+        }
+
+        $token = str_replace('Bearer ', '', $request->headers->get('Authorization'));
+        if ($token != $safebox->getToken()->getToken()) {
+            throw new HttpException(401, 'Specified token does not match');
+        }
+
+        $response = ['items' => []];
+        foreach ($safebox->getItems() as $item) {
+            $response['items'][] = $item->getContent();
+        }
+
+        return View::create($response, 200);
     }
 }
