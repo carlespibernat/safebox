@@ -2,32 +2,32 @@ version: '3'
 services:
     apache:
         build: .docker/apache
-        container_name: adsmurai_apache
+        container_name: safebox_apache
         ports:
           - 80:80
         volumes:
           - .docker/config/vhosts:/etc/apache2/sites-enabled
-          - .:/home/wwwroot/adsmurai
+          - .:/home/wwwroot/safebox
         depends_on:
           - php
 
     mysql:
         image: mysql:5.6
-        container_name: adsmurai_mysql
+        container_name: safebox_mysql
         volumes:
             - .docker/data/db:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: adsmurai
-            MYSQL_USER: adsmurai
-            MYSQL_PASSWORD: adsmurai
+            MYSQL_DATABASE: safebox
+            MYSQL_USER: safebox
+            MYSQL_PASSWORD: safebox
         ports:
           - 3307:3306
 
     php:
         build: .docker/php
-        container_name: adsmurai_php
+        container_name: safebox_php
         volumes:
-          - .:/home/wwwroot/adsmurai
+          - .:/home/wwwroot/safebox
         depends_on:
           - mysql

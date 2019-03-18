@@ -20,8 +20,8 @@ class SafeboxControllerTest extends ApiTestCase
         $initialCount = count($repository->findAll());
 
         $data = [
-            'name' => 'Adsmurai Safebox 01',
-            'password' => 'adsmuraiExamplePassword'
+            'name' => 'Safebox 01',
+            'password' => 'safeboxExamplePassword'
         ];
 
         $response = $this->request('safebox', 'POST', json_encode($data));
@@ -60,7 +60,7 @@ class SafeboxControllerTest extends ApiTestCase
             'safebox/1/open',
                 'GET',
                 '',
-                ['Authorization' => "Bearer adsmuraiExamplePassword"]
+                ['Authorization' => "Bearer safeboxExamplePassword"]
         );
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -93,15 +93,15 @@ class SafeboxControllerTest extends ApiTestCase
 
         // Test expiration time parameter
         $data = [
-            'name' => 'Adsmurai Safebox 02',
-            'password' => 'adsmuraiExamplePassword'
+            'name' => 'Safebox 02',
+            'password' => 'safeboxExamplePassword'
         ];
         $this->request('safebox', 'POST', json_encode($data));
         $this->request(
             'safebox/2/open?expirationTime=120',
             'GET',
             '',
-            ['Authorization' => "Bearer adsmuraiExamplePassword"]
+            ['Authorization' => "Bearer safeboxExamplePassword"]
         );
 
         $safebox = $repository->find(2);

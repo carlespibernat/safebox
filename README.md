@@ -4,27 +4,27 @@
 ## Deployment
 To deploy the application, first make sure you have Docker installed. If you don't, start by installing [Docker](https://docs.docker.com/install/ "Docker") on your system.
 
-Then clone the git project. To do that copy the *adsmurai.bundle* file into the directory where you want to work, and run the following command:  
-`git clone adsmurai.bundle`
+Then clone the git project. To do that the following command:  
+`git clone https://github.com/carlespibernat/safebox.git`
 
 Now access to the project path:  
-`cd adsmurai`
+`cd safebox`
 
 Now you can biuld and run the Docker containers with the following commands:  
-`docker-compose build`
+`docker-compose build`  
 `docker-composer up -d`
 
-Then access to the *adsmurai_php* container:  
-`docker exec -it adsmurai_php bash`
+Then access to the *safebox_php* container:  
+`docker exec -it safebox_php bash`
 
 And access to the project directory:  
-`cd adsmurai`
+`cd safebox`
 
 Now install composer packages:  
 `composer install`
 
 Finally, create the database and the database schema:  
-`bin/console doctrine:database:create`
+`bin/console doctrine:database:create`  
 `bin/console doctrine:schema:create`
 
 You can now start using the API!
