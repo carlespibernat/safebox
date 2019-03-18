@@ -12,7 +12,7 @@ Now access to the project path:
 
 Now you can biuld and run the Docker containers with the following commands:  
 `docker-compose build`  
-`docker-composer up -d`
+`docker-compose up -d`
 
 Then access to the *safebox_php* container:  
 `docker exec -it safebox_php bash`
